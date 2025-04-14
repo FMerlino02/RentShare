@@ -1,4 +1,7 @@
 from django.http import HttpResponse
 
+from django.contrib.auth.decorators import login_required
+
+@login_required
 def index(request):
-    return HttpResponse("Dashboard Home")
+    return HttpResponse("This is a protected Dashboard!")

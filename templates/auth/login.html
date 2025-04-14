@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<div class="card">
+    <img src="https://img.icons8.com/ios-filled/50/like.png" alt="Logo" />
+    <h2>Welcome back</h2>
+    <p>Please enter your details to sign in.</p>
+
+    <div class="social-buttons">
+        <button></button>
+        <button>G</button>
+        <button>🐦</button>
+    </div>
+
+    <div class="separator">OR</div>
+
+    <form method="post">
+        {% csrf_token %}
+        <label for="id_username">E-Mail Address</label>
+        <input type="text" name="username" id="id_username" placeholder="Enter your email...">
+
+        <label for="id_password">Password</label>
+        <input type="password" name="password" id="id_password" placeholder="••••••••••••">
+
+        <div class="form-actions">
+            <label><input type="checkbox" name="remember"> Remember me</label>
+            <a href="#">Forgot password?</a>
+        </div>
+
+        <button type="submit" class="btn-submit">Sign in</button>
+    </form>
+
+    <div class="signup-link">
+        Don't have an account yet? <a href="#">Sign Up</a>
+    </div>
+</div>
+{% endblock %}
