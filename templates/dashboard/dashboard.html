@@ -1,41 +1,96 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
+{% load static %}
+
 {% block title %}Dashboard{% endblock %}
 
 {% block content %}
-<div class="dashboard-container">
+  <div class="dashboard-container">
+    <!-- Property List -->
     <div class="property-list">
-        {% for area in areas %}
-            <div class="area-section">
-                <h3>{{ area.name }}</h3>
-                {% for prop in area.properties.all %}
-                    <div class="property-card">
-                        <img src="{{ prop.image.url }}" alt="{{ prop.property_name }}">
-                        <h4>{{ prop.property_name }}</h4>
-                        <p>Shares sold: {{ prop.shares_sold }}/{{ prop.total_shares }}</p>
-                    </div>
-                {% endfor %}
+      {% for area in areas %}
+        <div class="area-section">
+          <h3>{{ area.name }}</h3>
+          {% for prop in area.properties.all %}
+            <div class="property-card">
+              <img src="{{ prop.image.url }}" alt="{{ prop.property_name }}" />
+              <div class="property-info">
+                <h4>{{ prop.property_name }}</h4>
+                <p>Shares sold: {{ prop.shares_sold }}/{{ prop.total_shares }}</p>
+              </div>
             </div>
-        {% endfor %}
+          {% endfor %}
+        </div>
+      {% endfor %}
     </div>
 
-    <div id="map" class="dashboard-map">
-        <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-        <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <!-- Map -->
+    <div>
+      <div id="map" class="dashboard-map"></div>
+
+      <!-- Add Structure Button -->
+      <div class="add-structure-wrapper">
+        <button id="openModal" class="add-structure-btn">+ Add Structure</button>
+      </div>
     </div>
-</div>
+  </div>
 
-<script>
-    var map = L.map('map').setView([45.4642, 9.1900], 12); // Centered on Milan
+  <!-- Leaflet Map -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap contributors'
+  <script>
+    var map = L.map('map').setView([45.4642, 9.1900], 12);
+
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; CartoDB',
     }).addTo(map);
 
+    var customIcon = L.icon({
+        iconUrl: '{% static "icons/marker.svg" %}',
+        iconSize: [32, 32],
+        iconAnchor: [16, 32],
+        popupAnchor: [0, -32]
+    });
+
     {% for area in areas %}
-        {% for prop in area.properties.all %}
-            L.marker([{{ prop.latitude }}, {{ prop.longitude }}]).addTo(map)
-                .bindPopup(`<b>{{ prop.property_name|escapejs }}</b><br>{{ area.name|escapejs }}`);
-        {% endfor %}
+      {% for prop in area.properties.all %}
+        L.marker([{{ prop.latitude }}, {{ prop.longitude }}], { icon: customIcon }).addTo(map)
+          .bindPopup(`<b>{{ prop.property_name|escapejs }}</b><br>{{ area.name|escapejs }}`);
+      {% endfor %}
     {% endfor %}
-</script>
+  </script>
+
+  <!-- Modal -->
+  <div id="addStructureModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>Add New Property</h2>
+      <form method="post" enctype="multipart/form-data" action="{% url 'add_property' %}">
+        {% csrf_token %}
+        <input type="text" name="property_name" placeholder="Property Name" required />
+        <input type="text" name="location" placeholder="Location" />
+        <input type="number" name="total_shares" placeholder="Total Shares" required />
+        <input type="number" step="any" name="latitude" placeholder="Latitude" required />
+        <input type="number" step="any" name="longitude" placeholder="Longitude" required />
+        <select name="area" required>
+          {% for area in areas %}
+            <option value="{{ area.id }}">{{ area.name }}</option>
+          {% endfor %}
+        </select>
+        <input type="file" name="image" />
+        <button type="submit" class="btn-submit">Add Property</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal JS -->
+  <script>
+    const modal = document.getElementById("addStructureModal");
+    const btn = document.getElementById("openModal");
+    const span = document.getElementsByClassName("close")[0];
+
+    btn.onclick = () => modal.style.display = "block";
+    span.onclick = () => modal.style.display = "none";
+    window.onclick = (e) => { if (e.target === modal) modal.style.display = "none"; }
+  </script>
 {% endblock %}

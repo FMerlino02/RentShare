@@ -16,7 +16,7 @@ class Property(models.Model):
     latitude = models.FloatField()
     longitude = models.FloatField()
     image = models.ImageField(upload_to='property_images/')
-    total_shares = models.PositiveIntegerField()
+    total_shares = models.PositiveIntegerField(default=0)
     shares_sold = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -26,7 +26,7 @@ class Property(models.Model):
 class Transaction(models.Model):
     user = models.ForeignKey(User, on_delete=models.RESTRICT)
     real_property = models.ForeignKey(Property, on_delete=models.RESTRICT)
-    shares_purchased = models.PositiveIntegerField()
+    shares_purchased = models.PositiveIntegerField(default=0)
     share_price = models.DecimalField(max_digits=10, decimal_places=2)
     transaction_date = models.DateTimeField(auto_now_add=True)
     
@@ -37,12 +37,12 @@ class Transaction(models.Model):
 class Investment(models.Model):
     user = models.ForeignKey(User, on_delete=models.RESTRICT)
     property = models.ForeignKey(Property, on_delete=models.RESTRICT)
-    share_count = models.PositiveIntegerField()
+    share_count = models.PositiveIntegerField(default=0)
     last_updated = models.DateTimeField(auto_now=True)
 
 class Certificate(models.Model):
     user = models.ForeignKey(User, on_delete=models.RESTRICT)
     property = models.ForeignKey(Property, on_delete=models.RESTRICT)
-    share_count = models.PositiveIntegerField()
+    share_count = models.PositiveIntegerField(default=1)
     certificate_hash = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
