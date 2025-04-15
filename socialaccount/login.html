@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% load socialaccount %}
+
+{% block title %}Sign In with Google{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>Continue with Google</h2>
+    <p>You’re about to sign in using your Google account.</p>
+
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn-submit">Continue</button>
+    </form>
+
+    <div class="signup-link" style="margin-top: 20px;">
+        <a href="{% url 'account_login' %}">Back to login</a>
+    </div>
+</div>
+{% endblock %}

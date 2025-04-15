@@ -1,19 +1,26 @@
 {% extends "base.html" %}
 {% load static %}
+{% load socialaccount %}
 <link rel="stylesheet" href="{% static 'css/style.css' %}">
 
 {% block title %}Login{% endblock %}
 
 {% block content %}
 <div class="card">
-    <img src="https://img.icons8.com/ios-filled/50/like.png" alt="Logo" />
+    <img src="https://img.icons8.com/?size=100&id=59809&format=png&color=8A5CF6" alt="Logo" />
     <h2>Welcome back</h2>
     <p>Please enter your details to sign in.</p>
 
-    <div class="social-buttons">
-        <button></button>
-        <button>G</button>
-        <button>🐦</button>
+    <div class="social-icons">
+        <a href="#" class="social-icon apple">
+            <img src="https://img.icons8.com/ios-filled/24/000000/mac-os.png" alt="Apple" class="social-icon-img" >
+        </a>
+        <a href="{% provider_login_url 'google' %}" class="social-icon google">
+            <img src="https://img.icons8.com/color/24/000000/google-logo.png" alt="Google" class="social-icon-img" >
+        </a>
+        <a href="#" class="social-icon twitter">
+            <img src="https://img.icons8.com/color/24/000000/twitter--v1.png" alt="Twitter" class="social-icon-img" >
+        </a>
     </div>
 
     <div class="separator">OR</div>

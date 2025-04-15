@@ -5,7 +5,7 @@
 
 body {
     margin: 0;
-    background: #f8f8f8;
+    background: linear-gradient(#cab1d8, #FFFFFF);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -15,7 +15,7 @@ body {
 .card {
     background: white;
     border-radius: 20px;
-    padding: 40px 30px;
+    padding: 48px 24px 40px;
     width: 360px;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
     text-align: center;
@@ -23,33 +23,54 @@ body {
 
 .card img {
     width: 50px;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 
 .card h2 {
     margin: 0 0 10px;
 }
 
-.social-buttons {
+.social-icons {
     display: flex;
-    justify-content: space-between;
-    margin: 20px 0;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    margin: 24px 0;
 }
 
-.social-buttons button {
-    flex: 1;
-    margin: 0 5px;
-    padding: 10px;
-    border-radius: 10px;
-    border: 1px solid #ccc;
-    background: white;
-    cursor: pointer;
+.social-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 90px;
+    height: 46px;
+    background-color: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 14px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.social-icon:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+.social-icon img {
+    height: 26px;
+    width: 26px;
+}
+
+.social-icon-img {
+    display: block;
+    margin: auto;
 }
 
 .separator {
     margin: 20px 0;
     position: relative;
     text-align: center;
+    margin: 16px 0 24px;
 }
 
 .separator::before,
@@ -119,4 +140,27 @@ input[type="password"] {
 .signup-link a {
     text-decoration: none;
     font-weight: bold;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus {
+    outline: none;
+    border-color: #a46beb;
+    box-shadow: 0 0 0 3px rgba(164, 107, 235, 0.2);
+}
+
+input[type="text"],
+input[type="password"] {
+    transition: border 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-submit:hover {
+    background: #333;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.card {
+    width: 100%;
+    max-width: 360px;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.05);    
 }
