@@ -1,48 +1,48 @@
 {% extends "base.html" %}
-{% load static %}
 {% load socialaccount %}
-<link rel="stylesheet" href="{% static 'css/style.css' %}">
-
 {% block title %}Login{% endblock %}
 
 {% block content %}
-<div class="card">
-    <img src="https://img.icons8.com/?size=100&id=59809&format=png&color=8A5CF6" alt="Logo" />
-    <h2>Welcome back</h2>
-    <p>Please enter your details to sign in.</p>
+<div class="card-wrapper">
+    <div class="card">
+        <img src="https://img.icons8.com/?size=100&id=59809&format=png&color=8A5CF6" alt="Logo" />
+        <h2>Welcome back</h2>
+        <p>Please enter your details to sign in.</p>
 
-    <div class="social-icons">
-        <a href="#" class="social-icon apple">
-            <img src="https://img.icons8.com/ios-filled/24/000000/mac-os.png" alt="Apple" class="social-icon-img" >
-        </a>
-        <a href="{% provider_login_url 'google' %}" class="social-icon google">
-            <img src="https://img.icons8.com/color/24/000000/google-logo.png" alt="Google" class="social-icon-img" >
-        </a>
-        <a href="#" class="social-icon twitter">
-            <img src="https://img.icons8.com/color/24/000000/twitter--v1.png" alt="Twitter" class="social-icon-img" >
-        </a>
-    </div>
-
-    <div class="separator">OR</div>
-
-    <form method="post">
-        {% csrf_token %}
-        <label for="id_username">E-Mail Address</label>
-        <input type="text" name="username" id="id_username" placeholder="Enter your email...">
-
-        <label for="id_password">Password</label>
-        <input type="password" name="password" id="id_password" placeholder="••••••••••••">
-
-        <div class="form-actions">
-            <label><input type="checkbox" name="remember"> Remember me</label>
-            <a href="#">Forgot password?</a>
+        <div class="social-icons">
+            <a href="#" class="social-icon apple">
+                <img src="https://img.icons8.com/ios-filled/24/000000/mac-os.png" alt="Apple" class="social-icon-img" >
+            </a>
+            <a href="{% provider_login_url 'google' %}" class="social-icon google">
+                <img src="https://img.icons8.com/color/24/000000/google-logo.png" alt="Google" class="social-icon-img" >
+            </a>
+            <a href="#" class="social-icon twitter">
+                <img src="https://img.icons8.com/color/24/000000/twitter--v1.png" alt="Twitter" class="social-icon-img" >
+            </a>
         </div>
 
-        <button type="submit" class="btn-submit">Sign in</button>
-    </form>
+        <div class="separator">OR</div>
 
-    <div class="signup-link">
-        Don't have an account yet? <a href="#">Sign Up</a>
+        <form method="post">
+            {% csrf_token %}
+            <label for="id_username">E-Mail Address</label>
+            <input type="text" name="username" id="id_username" placeholder="Enter your email...">
+
+            <label for="id_password">Password</label>
+            <input type="password" name="password" id="id_password" placeholder="••••••••••••">
+
+            <div class="form-actions">
+                <label><input type="checkbox" name="remember"> Remember me</label>
+                <a href="#">Forgot password?</a>
+            </div>
+
+            <button type="submit" class="btn-submit">Sign in</button>
+        </form>
+
+        <div class="signup-link">
+            Don't have an account yet? <a href="#">Sign Up</a>
+        </div>
     </div>
 </div>
+
 {% endblock %}

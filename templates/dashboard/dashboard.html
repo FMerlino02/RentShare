@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="property-list">
+        {% for area in areas %}
+            <div class="area-section">
+                <h3>{{ area.name }}</h3>
+                {% for prop in area.properties.all %}
+                    <div class="property-card">
+                        <img src="{{ prop.image.url }}" alt="{{ prop.property_name }}">
+                        <h4>{{ prop.property_name }}</h4>
+                        <p>Shares sold: {{ prop.shares_sold }}/{{ prop.total_shares }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+    </div>
+
+    <div id="map" class="dashboard-map">
+        <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+        <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    </div>
+</div>
+
+<script>
+    var map = L.map('map').setView([45.4642, 9.1900], 12); // Centered on Milan
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    {% for area in areas %}
+        {% for prop in area.properties.all %}
+            L.marker([{{ prop.latitude }}, {{ prop.longitude }}]).addTo(map)
+                .bindPopup(`<b>{{ prop.property_name|escapejs }}</b><br>{{ area.name|escapejs }}`);
+        {% endfor %}
+    {% endfor %}
+</script>
+{% endblock %}
