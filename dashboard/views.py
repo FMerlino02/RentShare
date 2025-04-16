@@ -4,6 +4,7 @@ from django.contrib.auth.views import LoginView
 from ownership.models import Property, Area
 from django.contrib.auth.models import User
 from django.core.files.storage import default_storage
+from django.shortcuts import redirect, get_object_or_404
 
 @login_required
 def index(request):
@@ -42,3 +43,10 @@ def add_property(request):
             owner=request.user,
         )
     return redirect('dashboard')
+
+@login_required
+def delete_property(request, property_id):
+    property = get_object_or_404(Property, id=property_id)
+    if request.method == "POST":
+        property.delete()
+    return redirect('dashboard')  # Make sure this is your dashboard view name

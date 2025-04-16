@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Ownership Dashboard{% endblock %}
+
+{% block content %}
+<div class="parent">
+
+  <!-- Sales & Revenue (Top Left - div1) -->
+  <div class="div1 chart-card">
+    <h3>Sales & Revenue</h3>
+    <canvas id="salesChart"></canvas>
+  </div>
+
+  <!-- KPI: Most Profitable Area (Top Right - div2) -->
+  <div class="div2 kpi-card purple">
+    <h4>Most Profitable Area</h4>
+    <img src="{% static 'icons/kpi_card.svg' %}" class="kpi-svg-overlay" alt="overlay" />
+    <p class="kpi-value">$12,245</p>
+    <p class="kpi-sub"><span class="up">▲</span> 16% Sales</p>
+  </div>
+
+  <!-- KPI: Monthly Users (Under div2 - div3) -->
+  <div class="div3 kpi-card pink">
+    <h4>Monthly Users</h4>
+    <img src="{% static 'icons/kpi_card.svg' %}" class="kpi-svg-overlay mirror" alt="overlay" />
+    <p class="kpi-value">7,306</p>
+    <p class="kpi-sub"><span class="down">▼</span> 3% Activity</p>
+  </div>
+
+
+  <!-- Pie Chart (Bottom Right - div4) -->
+  <div class="div4 pie-card">
+    <h3>Area popularity</h3>
+    <canvas id="areaChart"></canvas>
+    <ul class="legend">
+      <li><span class="dot brera"></span> Brera</li>
+      <li><span class="dot romana"></span> P. Romana</li>
+      <li><span class="dot citylife"></span> CityLife</li>
+      <li><span class="dot sansiro"></span> San Siro</li>
+    </ul>
+  </div>
+
+  <!-- Orders Table (Bottom Left - div5) -->
+  <div class="div5 table-card">
+    <h3>Orders</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Order ID</th>
+          <th>Customer</th>
+          <th>Shares</th>
+          <th>Price</th>
+          <th>Area</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for t in transactions %}
+        <tr>
+          <td>#{{ t.id }}</td>
+          <td>{{ t.customer.username }}</td>
+          <td>{{ t.shares }}</td>
+          <td>${{ t.price }}</td>
+          <td>{{ t.property.area.name }}</td>
+          <td class="status {{ t.status|lower }}">{{ t.status }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+<!-- Chart.js Library -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- Sales Chart -->
+<script>
+  const salesCtx = document.getElementById('salesChart').getContext('2d');
+  new Chart(salesCtx, {
+    type: 'bar',
+    data: {
+      labels: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+      datasets: [{
+        label: 'Sales',
+        data: [1000, 2500, 3000, 5000, 2900, 2700, 3300, 3100, 2600, 3700, 4000, 4800],
+        backgroundColor: '#8A5CF6',
+        borderRadius: 8,
+        barPercentage: 0.6,
+        borderSkipped: false
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: {
+            callback: function (value) {
+              return '$' + value;
+            }
+          }
+        }
+      }
+    }
+  });
+</script>
+
+<!-- Area Chart -->
+<script>
+  const areaCtx = document.getElementById('areaChart').getContext('2d');
+  new Chart(areaCtx, {
+    type: 'pie',
+    data: {
+      labels: ['Brera', 'P. Romana', 'CityLife', 'San Siro'],
+      datasets: [{
+        data: [30, 25, 25, 20],
+        backgroundColor: ['#8A5CF6', '#C084FC', '#34D399', '#F87171']
+      }]
+    },
+    options: {
+      plugins: {
+        legend: { display: false }
+      }
+    }
+  });
+</script>
+{% endblock %}

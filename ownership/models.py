@@ -24,15 +24,22 @@ class Property(models.Model):
         return self.property_name
 
 class Transaction(models.Model):
-    user = models.ForeignKey(User, on_delete=models.RESTRICT)
-    real_property = models.ForeignKey(Property, on_delete=models.RESTRICT)
-    shares_purchased = models.PositiveIntegerField(default=0)
-    share_price = models.DecimalField(max_digits=10, decimal_places=2)
-    transaction_date = models.DateTimeField(auto_now_add=True)
+    STATUS_CHOICES = [
+        ('processing', 'Processing'),
+        ('accepted', 'Accepted'),
+        ('declined', 'Declined'),
+    ]
+
+    order_id = models.CharField(max_length=20, unique=True)
+    customer = models.ForeignKey(User, on_delete=models.CASCADE)
+    property = models.ForeignKey(Property, on_delete=models.CASCADE)
+    shares_amount = models.IntegerField()
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='processing')
+    created_at = models.DateTimeField(auto_now_add=True)
     
-    @property
-    def total_amount(self):
-        return self.shares_purchased * self.share_price
+    def __str__(self):
+        return f"{self.order_id} - {self.customer.username}"
 
 class Investment(models.Model):
     user = models.ForeignKey(User, on_delete=models.RESTRICT)
