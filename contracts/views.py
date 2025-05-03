@@ -1,4 +1,4 @@
-from django.http import HttpResponse
+from django.shortcuts import render
 
-def index(request):
-    return HttpResponse("Contracts Home")
+def contracts_view(request):
+    return render(request, 'contracts/contracts.html')

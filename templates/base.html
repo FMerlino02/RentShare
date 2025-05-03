@@ -19,8 +19,8 @@
             </div>
             <div class="navbar-links">
                 <a href="{% url 'dashboard' %}" class="{% if request.path == '/dashboard/' %}active{% endif %}">Home</a>
-                <a href="{% url 'ownership_home' %}" class="{% if request.path == '/ownership/' %}active{% endif %}">Balance</a>
-                <a href="#" class="{% if request.path == '/transfer/' %}active{% endif %}">Transfer</a>
+                <a href="{% url 'ownership_home' %}" class="{% if request.path == '/ownership/' %}active{% endif %}">Analytics</a>
+                <a href="{% url 'contracts' %}" class="{% if request.path == '/contracts/' %}active{% endif %}">Contracts</a>
                 <a href="#" class="{% if request.path == '/settings/' %}active{% endif %}">Settings</a>
             </div>
 

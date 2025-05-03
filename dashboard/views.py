@@ -16,7 +16,7 @@ class CustomLoginView(LoginView):
 
     def dispatch(self, request, *args, **kwargs):
         if request.user.is_authenticated:
-            return redirect('dashboard')  # or whatever URL name your dashboard uses
+            return redirect('dashboard')
         return super().dispatch(request, *args, **kwargs)
 
 @login_required

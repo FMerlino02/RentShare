@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Contracts {%endblock %} 
+
+{% block content %}
+<div class="parent-2">
+  <!-- Share Cards -->
+  <div class="div2-1 card-container">
+    <h3>Share Cards</h3>
+    <div class="card-stack">
+      <div class="share-card back"></div>
+      <div class="share-card middle"></div>
+      <div class="share-card front">
+        <div class="foil"></div>
+        <div class="card-content">
+          <p class="card-id">#1328</p>
+          <img
+            src="{% static 'icons/qr-code.svg' %}"
+            alt="QR Code"
+            class="qr-img"
+          />
+          <p class="card-location">Milano, Via Madonnina 5</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Market Place Button -->
+  <div class="div2-2 kpi-card purple">
+    <span class="small-label">Get More Shares</span>
+    <img
+      src="{% static 'icons/kpi_card.svg' %}"
+      class="kpi-svg-overlay"
+      alt="overlay"
+    />
+    <span class="large-label">Market Place →</span>
+  </div>
+
+  <!-- Returns Table -->
+  <div class="div2-3 returns">
+    <h3>Returns</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Share ID</th>
+          <th>Share Amount</th>
+          <th>M. Return</th>
+          <th>Area</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>#1328</td>
+          <td>6.5%</td>
+          <td>23$</td>
+          <td>P. Romana 🔗</td>
+        </tr>
+        <tr>
+          <td>#1347</td>
+          <td>7.9%</td>
+          <td>30$</td>
+          <td>Citylife 🔗</td>
+        </tr>
+        <tr>
+          <td>#1478</td>
+          <td>2.7%</td>
+          <td>15$</td>
+          <td>Brera 🔗</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="total-return">Total Monthly Return <strong>68$</strong></p>
+  </div>
+
+  <!-- Transfer Now Button -->
+  <div class="div2-4 kpi-card pink">
+    <img
+      src="{% static 'icons/kpi_card.svg' %}"
+      class="kpi-svg-overlay mirror"
+      alt="overlay"
+    />
+    <span class="small-label">Transfer Properties</span>
+    <span class="large-label">Transfer Now →</span>
+  </div>
+
+  <!-- Optional bottom-left div -->
+  <div class="div2-5"></div>
+</div>
+
+{% endblock %}
