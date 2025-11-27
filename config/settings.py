@@ -49,6 +49,8 @@ INSTALLED_APPS = [
     'dashboard',
     'contracts',
     'ownership',
+    'marketplace',
+    'user_settings',
 ]
 
 MIDDLEWARE = [
@@ -150,4 +152,7 @@ ACCOUNT_LOGOUT_REDIRECT_URL = '/login/'
 MEDIA_URL = '/media/'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# Email configuration for development
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 

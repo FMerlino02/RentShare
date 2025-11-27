@@ -1,0 +1,509 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Settings{% endblock %}
+
+{% block content %}
+<div class="settings-container">
+  <h1 class="settings-title">Account Settings</h1>
+
+  <div class="settings-tabs">
+    <button class="tab-btn active" data-tab="profile">Profile</button>
+    <button class="tab-btn" data-tab="security">Security</button>
+    <button class="tab-btn" data-tab="notifications">Notifications</button>
+    <button class="tab-btn" data-tab="wallet">Wallet</button>
+  </div>
+
+  <!-- Profile Tab -->
+  <div class="tab-content active" id="profile-tab">
+    <div class="settings-section">
+      <h2>Personal Information</h2>
+      <form id="profile-form" class="settings-form">
+        {% csrf_token %}
+
+        <div class="form-group">
+          <label for="profile-picture">Profile Picture</label>
+          <div class="profile-picture-upload">
+            <div class="profile-picture-preview">
+              <img src="https://img.icons8.com/?size=100&id=7819&format=png&color=8A5CF6" alt="Profile" id="profile-img">
+            </div>
+            <input type="file" id="profile-picture" name="profile_picture" accept="image/*">
+            <button type="button" class="btn-upload" onclick="document.getElementById('profile-picture').click()">Choose Photo</button>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" value="{{ user.username }}" required>
+          </div>
+
+          <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" name="email" value="{{ user.email }}" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="first-name">First Name</label>
+            <input type="text" id="first-name" name="first_name" value="{{ user.first_name }}">
+          </div>
+
+          <div class="form-group">
+            <label for="last-name">Last Name</label>
+            <input type="text" id="last-name" name="last_name" value="{{ user.last_name }}">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="phone">Phone Number</label>
+          <input type="tel" id="phone" name="phone" placeholder="+1 (555) 000-0000">
+        </div>
+
+        <div class="form-group">
+          <label for="address">Address</label>
+          <textarea id="address" name="address" rows="3" placeholder="Enter your address"></textarea>
+        </div>
+
+        <div class="form-divider"></div>
+
+        <h3>Change Password</h3>
+        <div class="form-group">
+          <label for="current-password">Current Password</label>
+          <input type="password" id="current-password" name="current_password">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="new-password">New Password</label>
+            <input type="password" id="new-password" name="new_password">
+          </div>
+
+          <div class="form-group">
+            <label for="confirm-password">Confirm Password</label>
+            <input type="password" id="confirm-password" name="confirm_password">
+          </div>
+        </div>
+
+        <button type="submit" class="btn-save">Save Changes</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Security Tab -->
+  <div class="tab-content" id="security-tab">
+    <div class="settings-section">
+      <h2>Security Settings</h2>
+      <form id="security-form" class="settings-form">
+        {% csrf_token %}
+
+        <div class="security-item">
+          <div class="security-info">
+            <h3>Two-Factor Authentication</h3>
+            <p>Add an extra layer of security to your account</p>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" name="two_factor" id="two-factor">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+
+        <div class="form-divider"></div>
+
+        <h3>Login History</h3>
+        <div class="login-history">
+          <div class="history-item">
+            <div class="history-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <rect x="4" y="4" width="16" height="16" rx="2"></rect>
+                <rect x="9" y="9" width="6" height="6"></rect>
+                <path d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 14h3M1 9h3M1 14h3"></path>
+              </svg>
+            </div>
+            <div class="history-details">
+              <p class="history-device">Windows PC - Chrome</p>
+              <p class="history-location">New York, USA</p>
+              <p class="history-time">Current Session</p>
+            </div>
+            <span class="history-status active">Active</span>
+          </div>
+
+          <div class="history-item">
+            <div class="history-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                <line x1="12" y1="18" x2="12.01" y2="18"></line>
+              </svg>
+            </div>
+            <div class="history-details">
+              <p class="history-device">iPhone 14 - Safari</p>
+              <p class="history-location">New York, USA</p>
+              <p class="history-time">2 hours ago</p>
+            </div>
+            <span class="history-status">Logged out</span>
+          </div>
+
+          <div class="history-item">
+            <div class="history-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <rect x="4" y="4" width="16" height="16" rx="2"></rect>
+                <rect x="9" y="9" width="6" height="6"></rect>
+                <path d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 14h3M1 9h3M1 14h3"></path>
+              </svg>
+            </div>
+            <div class="history-details">
+              <p class="history-device">MacBook Pro - Safari</p>
+              <p class="history-location">Brooklyn, USA</p>
+              <p class="history-time">1 day ago</p>
+            </div>
+            <span class="history-status">Logged out</span>
+          </div>
+        </div>
+
+        <div class="form-divider"></div>
+
+        <h3>Active Sessions</h3>
+        <div class="active-sessions">
+          <div class="session-item">
+            <div class="session-info">
+              <p class="session-device">Windows PC - Chrome</p>
+              <p class="session-details">127.0.0.1 • New York, USA • Active now</p>
+            </div>
+            <button type="button" class="btn-revoke" disabled>This Device</button>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-save">Update Security Settings</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Notifications Tab -->
+  <div class="tab-content" id="notifications-tab">
+    <div class="settings-section">
+      <h2>Notification Preferences</h2>
+      <form id="notifications-form" class="settings-form">
+        {% csrf_token %}
+
+        <div class="notification-item">
+          <div class="notification-info">
+            <h3>Email Notifications</h3>
+            <p>Receive updates and alerts via email</p>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" name="email_notifications" checked>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+
+        <div class="notification-item">
+          <div class="notification-info">
+            <h3>Transaction Confirmations</h3>
+            <p>Get notified when transactions are completed</p>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" name="transaction_confirmations" checked>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+
+        <div class="notification-item">
+          <div class="notification-info">
+            <h3>Monthly Return Updates</h3>
+            <p>Receive monthly reports on your investment returns</p>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" name="monthly_returns" checked>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+
+        <div class="notification-item">
+          <div class="notification-info">
+            <h3>New Property Listings</h3>
+            <p>Be the first to know about new investment opportunities</p>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" name="new_listings" checked>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+
+        <div class="notification-item">
+          <div class="notification-info">
+            <h3>Price Alerts</h3>
+            <p>Get notified about significant price changes</p>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" name="price_alerts">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+
+        <div class="notification-item">
+          <div class="notification-info">
+            <h3>Marketing Communications</h3>
+            <p>Receive newsletters and promotional content</p>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" name="marketing">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+
+        <button type="submit" class="btn-save">Save Preferences</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Wallet Tab -->
+  <div class="tab-content" id="wallet-tab">
+    <div class="settings-section">
+      <h2>Wallet Management</h2>
+      <form id="wallet-form" class="settings-form">
+        {% csrf_token %}
+
+        <h3>Saved Wallet Addresses</h3>
+        <div class="wallet-addresses">
+          <div class="wallet-address-item">
+            <div class="wallet-icon metamask">
+              <img src="https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Fox.svg" alt="MetaMask">
+            </div>
+            <div class="wallet-details">
+              <p class="wallet-name">MetaMask</p>
+              <p class="wallet-address">0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb</p>
+            </div>
+            <button type="button" class="btn-remove">Remove</button>
+          </div>
+
+          <div class="wallet-address-item">
+            <div class="wallet-icon phantom">
+              <img src="{% static 'icons/phantom.svg' %}" alt="Phantom">
+            </div>
+            <div class="wallet-details">
+              <p class="wallet-name">Phantom</p>
+              <p class="wallet-address">DYw8jCTfwHNRJhhmFcbXvVDTqWMEVFBX6ZKUmG5CNSKK</p>
+            </div>
+            <button type="button" class="btn-remove">Remove</button>
+          </div>
+        </div>
+
+        <button type="button" class="btn-add-wallet">+ Add New Wallet</button>
+
+        <div class="form-divider"></div>
+
+        <h3>Preferred Payment Method</h3>
+        <div class="payment-methods">
+          <label class="payment-option">
+            <input type="radio" name="payment_method" value="metamask" checked>
+            <div class="payment-card">
+              <img src="https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Fox.svg" alt="MetaMask">
+              <span>MetaMask (ETH)</span>
+            </div>
+          </label>
+
+          <label class="payment-option">
+            <input type="radio" name="payment_method" value="phantom">
+            <div class="payment-card">
+              <img src="{% static 'icons/phantom.svg' %}" alt="Phantom">
+              <span>Phantom (SOL)</span>
+            </div>
+          </label>
+        </div>
+
+        <div class="form-divider"></div>
+
+        <h3>Transaction History</h3>
+        <div class="transaction-history">
+          <div class="transaction-item">
+            <div class="transaction-icon success">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+            </div>
+            <div class="transaction-details">
+              <p class="transaction-type">Property Purchase</p>
+              <p class="transaction-property">Sunset Villa</p>
+              <p class="transaction-date">Nov 25, 2025</p>
+            </div>
+            <div class="transaction-amount">
+              <p class="amount">-0.0234 BTC</p>
+              <p class="amount-usd">$1,053.00</p>
+            </div>
+          </div>
+
+          <div class="transaction-item">
+            <div class="transaction-icon success">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+            </div>
+            <div class="transaction-details">
+              <p class="transaction-type">Property Purchase</p>
+              <p class="transaction-property">Ocean Breeze Condo</p>
+              <p class="transaction-date">Nov 20, 2025</p>
+            </div>
+            <div class="transaction-amount">
+              <p class="amount">-0.0156 BTC</p>
+              <p class="amount-usd">$702.00</p>
+            </div>
+          </div>
+
+          <div class="transaction-item">
+            <div class="transaction-icon incoming">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <polyline points="19 12 12 19 5 12"></polyline>
+              </svg>
+            </div>
+            <div class="transaction-details">
+              <p class="transaction-type">Monthly Return</p>
+              <p class="transaction-property">Portfolio Returns</p>
+              <p class="transaction-date">Nov 1, 2025</p>
+            </div>
+            <div class="transaction-amount">
+              <p class="amount success">+0.0012 BTC</p>
+              <p class="amount-usd">$54.00</p>
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-save">Save Wallet Settings</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+// Tab Switching
+document.addEventListener('DOMContentLoaded', function() {
+  const tabBtns = document.querySelectorAll('.tab-btn');
+  const tabContents = document.querySelectorAll('.tab-content');
+
+  tabBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const tabName = btn.getAttribute('data-tab');
+
+      tabBtns.forEach(b => b.classList.remove('active'));
+      tabContents.forEach(c => c.classList.remove('active'));
+
+      btn.classList.add('active');
+      document.getElementById(`${tabName}-tab`).classList.add('active');
+    });
+  });
+
+  // Profile Form Submission
+  document.getElementById('profile-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+
+    fetch("{% url 'user_settings:update_profile' %}", {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      showNotification(data.message, data.success ? 'success' : 'error');
+    })
+    .catch(error => {
+      showNotification('An error occurred. Please try again.', 'error');
+    });
+  });
+
+  // Security Form Submission
+  document.getElementById('security-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+
+    fetch("{% url 'user_settings:update_security' %}", {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      showNotification(data.message, data.success ? 'success' : 'error');
+    })
+    .catch(error => {
+      showNotification('An error occurred. Please try again.', 'error');
+    });
+  });
+
+  // Notifications Form Submission
+  document.getElementById('notifications-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+
+    fetch("{% url 'user_settings:update_notifications' %}", {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      showNotification(data.message, data.success ? 'success' : 'error');
+    })
+    .catch(error => {
+      showNotification('An error occurred. Please try again.', 'error');
+    });
+  });
+
+  // Wallet Form Submission
+  document.getElementById('wallet-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+
+    fetch("{% url 'user_settings:update_wallet' %}", {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      showNotification(data.message, data.success ? 'success' : 'error');
+    })
+    .catch(error => {
+      showNotification('An error occurred. Please try again.', 'error');
+    });
+  });
+
+  // Profile Picture Preview
+  document.getElementById('profile-picture').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        document.getElementById('profile-img').src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+
+  // Notification System
+  function showNotification(message, type) {
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    notification.textContent = message;
+    document.body.appendChild(notification);
+
+    setTimeout(() => notification.classList.add('show'), 100);
+
+    setTimeout(() => {
+      notification.classList.remove('show');
+      setTimeout(() => notification.remove(), 300);
+    }, 3000);
+  }
+});
+</script>
+
+{% endblock %}

@@ -1,0 +1,270 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Marketplace{% endblock %}
+
+{% block content %}
+<div class="marketplace-container">
+  <div class="marketplace-header">
+    <h1>Property Marketplace</h1>
+    <div class="btc-price-banner">
+      <img src="https://cryptologos.cc/logos/bitcoin-btc-logo.svg" alt="BTC" class="btc-icon">
+      <span>1 BTC = ${{ btc_price|floatformat:2 }} USD</span>
+    </div>
+  </div>
+
+  <div class="property-grid">
+    {% for item in properties %}
+    <div class="marketplace-card" data-property-id="{{ item.property.id }}">
+      <div class="property-image-container">
+        <img src="{{ item.property.image.url }}" alt="{{ item.property.property_name }}" class="property-image">
+        <div class="property-badge">{{ item.available_shares }} shares available</div>
+      </div>
+
+      <div class="property-info">
+        <h3>{{ item.property.property_name }}</h3>
+        <p class="property-location">
+          <img src="{% static 'icons/location.svg' %}" alt="Location" class="location-icon">
+          {{ item.property.location }}
+        </p>
+        <p class="property-area">Area: {{ item.property.area.name }}</p>
+
+        <div class="property-stats">
+          <div class="stat">
+            <span class="stat-label">Total Shares</span>
+            <span class="stat-value">{{ item.property.total_shares }}</span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">Sold</span>
+            <span class="stat-value">{{ item.property.shares_sold }}</span>
+          </div>
+        </div>
+
+        <div class="property-pricing">
+          <div class="price-row">
+            <span class="price-label">Price per share:</span>
+            <div class="price-values">
+              <span class="price-usd">${{ item.price_usd }}</span>
+              <span class="price-btc">{{ item.price_btc|floatformat:8 }} BTC</span>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn-buy" onclick="openPurchaseModal({{ item.property.id }}, '{{ item.property.property_name }}', {{ item.price_usd }}, {{ item.price_btc|floatformat:8 }}, {{ item.available_shares }})">
+          Buy Shares
+        </button>
+      </div>
+    </div>
+    {% empty %}
+    <p class="no-properties">No properties available at the moment.</p>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- Purchase Modal -->
+<div id="purchaseModal" class="purchase-modal">
+  <div class="purchase-modal-content">
+    <span class="close" onclick="closePurchaseModal()">&times;</span>
+    <h2>Purchase Shares</h2>
+    <p id="modalPropertyName" class="modal-property-name"></p>
+
+    <div class="modal-form">
+      <div class="form-group">
+        <label for="shareAmount">Number of Shares</label>
+        <input type="number" id="shareAmount" min="1" value="1" onchange="updateTotalPrice()">
+        <p class="available-shares-text">Available: <span id="maxShares">0</span> shares</p>
+      </div>
+
+      <div class="price-summary">
+        <div class="summary-row">
+          <span>Total Price (USD):</span>
+          <span id="totalUSD" class="price-highlight">$0.00</span>
+        </div>
+        <div class="summary-row">
+          <span>Total Price (BTC):</span>
+          <span id="totalBTC" class="price-highlight">0.00000000 BTC</span>
+        </div>
+      </div>
+
+      <div class="wallet-selection">
+        <h3>Select Wallet</h3>
+        <div class="wallet-buttons">
+          <button class="wallet-btn metamask-btn" onclick="connectWallet('metamask')">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Fox.svg" alt="MetaMask">
+            MetaMask
+          </button>
+          <button class="wallet-btn phantom-btn" onclick="connectWallet('phantom')">
+            <img src="{% static 'icons/phantom.svg' %}" alt="Phantom">
+            Phantom
+          </button>
+        </div>
+      </div>
+
+      <div id="walletStatus" class="wallet-status"></div>
+
+      <button id="confirmPurchaseBtn" class="btn-confirm-purchase" disabled onclick="confirmPurchase()">
+        Connect Wallet First
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Web3 Integration Script -->
+<script>
+let currentPropertyId = null;
+let currentPriceUSD = 0;
+let currentPriceBTC = 0;
+let currentWalletAddress = null;
+let currentPaymentMethod = null;
+let maxAvailableShares = 0;
+
+function openPurchaseModal(propertyId, propertyName, priceUSD, priceBTC, availableShares) {
+  currentPropertyId = propertyId;
+  currentPriceUSD = parseFloat(priceUSD);
+  currentPriceBTC = parseFloat(priceBTC);
+  maxAvailableShares = availableShares;
+
+  document.getElementById('modalPropertyName').textContent = propertyName;
+  document.getElementById('maxShares').textContent = availableShares;
+  document.getElementById('shareAmount').max = availableShares;
+  document.getElementById('shareAmount').value = 1;
+
+  updateTotalPrice();
+
+  document.getElementById('purchaseModal').style.display = 'block';
+
+  // Reset wallet connection state
+  currentWalletAddress = null;
+  currentPaymentMethod = null;
+  document.getElementById('walletStatus').innerHTML = '';
+  document.getElementById('confirmPurchaseBtn').disabled = true;
+  document.getElementById('confirmPurchaseBtn').textContent = 'Connect Wallet First';
+}
+
+function closePurchaseModal() {
+  document.getElementById('purchaseModal').style.display = 'none';
+}
+
+function updateTotalPrice() {
+  const shares = parseInt(document.getElementById('shareAmount').value) || 0;
+  const totalUSD = shares * currentPriceUSD;
+  const totalBTC = shares * currentPriceBTC;
+
+  document.getElementById('totalUSD').textContent = '$' + totalUSD.toFixed(2);
+  document.getElementById('totalBTC').textContent = totalBTC.toFixed(8) + ' BTC';
+}
+
+async function connectWallet(walletType) {
+  try {
+    // DEMO MODE: Simulate wallet connection for demonstration
+    const demoAddress = walletType === 'metamask'
+      ? '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb'
+      : 'DYw8jCTfwHNRJhhmFcbXvVDTqWMEVFBX6ZKUmG5CNSKK';
+
+    currentWalletAddress = demoAddress;
+    currentPaymentMethod = walletType;
+
+    const walletName = walletType === 'metamask' ? 'MetaMask' : 'Phantom';
+
+    document.getElementById('walletStatus').innerHTML =
+      `<div class="wallet-connected">
+        <span class="check-icon">✓</span>
+        ${walletName} Connected: ${currentWalletAddress.substring(0, 6)}...${currentWalletAddress.substring(currentWalletAddress.length - 6)}
+      </div>`;
+
+    document.getElementById('confirmPurchaseBtn').disabled = false;
+    document.getElementById('confirmPurchaseBtn').textContent = 'Confirm Purchase';
+
+    // Note: In production, use the code below to actually connect to wallets
+    /*
+    if (walletType === 'metamask') {
+      if (typeof window.ethereum !== 'undefined') {
+        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        currentWalletAddress = accounts[0];
+        currentPaymentMethod = 'metamask';
+      } else {
+        document.getElementById('walletStatus').innerHTML =
+          '<div class="wallet-error">MetaMask is not installed.</div>';
+        return;
+      }
+    } else if (walletType === 'phantom') {
+      if (typeof window.solana !== 'undefined' && window.solana.isPhantom) {
+        const response = await window.solana.connect();
+        currentWalletAddress = response.publicKey.toString();
+        currentPaymentMethod = 'phantom';
+      } else {
+        document.getElementById('walletStatus').innerHTML =
+          '<div class="wallet-error">Phantom is not installed.</div>';
+        return;
+      }
+    }
+    */
+  } catch (error) {
+    document.getElementById('walletStatus').innerHTML =
+      '<div class="wallet-error">Failed to connect wallet: ' + error.message + '</div>';
+  }
+}
+
+async function confirmPurchase() {
+  if (!currentWalletAddress || !currentPaymentMethod) {
+    alert('Please connect your wallet first');
+    return;
+  }
+
+  const shares = parseInt(document.getElementById('shareAmount').value);
+  if (shares <= 0 || shares > maxAvailableShares) {
+    alert(`Please enter a valid number of shares (1-${maxAvailableShares})`);
+    return;
+  }
+
+  // Disable button during processing
+  document.getElementById('confirmPurchaseBtn').disabled = true;
+  document.getElementById('confirmPurchaseBtn').textContent = 'Processing...';
+
+  try {
+    const formData = new FormData();
+    formData.append('property_id', currentPropertyId);
+    formData.append('shares_amount', shares);
+    formData.append('wallet_address', currentWalletAddress);
+    formData.append('payment_method', currentPaymentMethod);
+
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+    const response = await fetch('/marketplace/purchase/', {
+      method: 'POST',
+      headers: {
+        'X-CSRFToken': csrfToken
+      },
+      body: formData
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      alert(`Success! ${data.message}\nOrder ID: ${data.order_id}`);
+      closePurchaseModal();
+      location.reload(); // Reload to update available shares
+    } else {
+      alert('Error: ' + data.error);
+      document.getElementById('confirmPurchaseBtn').disabled = false;
+      document.getElementById('confirmPurchaseBtn').textContent = 'Confirm Purchase';
+    }
+  } catch (error) {
+    alert('Error processing purchase: ' + error.message);
+    document.getElementById('confirmPurchaseBtn').disabled = false;
+    document.getElementById('confirmPurchaseBtn').textContent = 'Confirm Purchase';
+  }
+}
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+  const modal = document.getElementById('purchaseModal');
+  if (event.target == modal) {
+    closePurchaseModal();
+  }
+}
+</script>
+
+{% csrf_token %}
+
+{% endblock %}

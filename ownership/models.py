@@ -18,6 +18,7 @@ class Property(models.Model):
     image = models.ImageField(upload_to='property_images/')
     total_shares = models.PositiveIntegerField(default=0)
     shares_sold = models.PositiveIntegerField(default=0)
+    price_per_share = models.DecimalField(max_digits=10, decimal_places=2, default=100.00)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

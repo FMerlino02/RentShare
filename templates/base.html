@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>{% block title %}RentShare{% endblock %}</title>
+    <link rel="icon" type="image/png" href="https://img.icons8.com/?size=100&id=59809&format=png&color=8A5CF6">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 </head>
@@ -21,7 +22,8 @@
                 <a href="{% url 'dashboard' %}" class="{% if request.path == '/dashboard/' %}active{% endif %}">Home</a>
                 <a href="{% url 'ownership_home' %}" class="{% if request.path == '/ownership/' %}active{% endif %}">Analytics</a>
                 <a href="{% url 'contracts' %}" class="{% if request.path == '/contracts/' %}active{% endif %}">Contracts</a>
-                <a href="#" class="{% if request.path == '/settings/' %}active{% endif %}">Settings</a>
+                <a href="{% url 'marketplace:marketplace' %}" class="{% if request.path == '/marketplace/' %}active{% endif %}">Marketplace</a>
+                <a href="{% url 'user_settings:settings' %}" class="{% if request.path == '/settings/' %}active{% endif %}">Settings</a>
             </div>
 
             <div class="navbar-actions">
@@ -39,6 +41,55 @@
     <main>
         {% block content %}{% endblock %}
     </main>
+
+    <!-- Night Mode Toggle Button (appears on all pages) -->
+    {% if user.is_authenticated %}
+    <button id="night-mode-toggle" class="night-mode-btn" title="Toggle Night Mode">
+        <svg class="sun-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        </svg>
+        <svg class="moon-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+    </button>
+
+    <script>
+        // Global Night Mode Toggle Script
+        document.addEventListener('DOMContentLoaded', function() {
+            const nightModeBtn = document.getElementById('night-mode-toggle');
+            const body = document.body;
+            const html = document.documentElement;
+
+            // Check for saved preference
+            const savedMode = localStorage.getItem('nightMode');
+            if (savedMode === 'enabled') {
+                body.classList.add('night-mode');
+                html.classList.add('night-mode');
+            }
+
+            if (nightModeBtn) {
+                nightModeBtn.addEventListener('click', () => {
+                    body.classList.toggle('night-mode');
+                    html.classList.toggle('night-mode');
+
+                    if (body.classList.contains('night-mode')) {
+                        localStorage.setItem('nightMode', 'enabled');
+                    } else {
+                        localStorage.setItem('nightMode', 'disabled');
+                    }
+                });
+            }
+        });
+    </script>
+    {% endif %}
 
 </body>
 </html>

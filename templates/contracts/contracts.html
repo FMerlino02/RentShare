@@ -8,26 +8,40 @@
   <!-- Share Cards -->
   <div class="div2-1 card-container">
     <h3>Share Cards</h3>
-    <div class="card-stack">
-      <div class="share-card back"></div>
-      <div class="share-card middle"></div>
-      <div class="share-card front">
+    {% if has_investments %}
+    <div class="card-stack" id="card-stack">
+      {% for item in investments %}
+      <div class="share-card {% if forloop.first %}front{% elif forloop.counter == 2 %}middle{% else %}back{% endif %}" data-index="{{ forloop.counter0 }}">
         <div class="foil"></div>
         <div class="card-content">
-          <p class="card-id">#1328</p>
+          <p class="card-id">#{{ item.certificate_id|default:"N/A" }}</p>
           <img
             src="{% static 'icons/qr-code.svg' %}"
             alt="QR Code"
             class="qr-img"
           />
-          <p class="card-location">Milano, Via Madonnina 5</p>
+          <p class="card-property-name">{{ item.investment.property.property_name }}</p>
+          <p class="card-location">{{ item.investment.property.location }}</p>
+          <p class="card-shares">{{ item.investment.share_count }} shares ({{ item.share_percentage }}%)</p>
         </div>
       </div>
+      {% endfor %}
     </div>
+    <div class="card-navigation">
+      <button id="prev-card" class="nav-btn">← Previous</button>
+      <span id="card-counter">1 of {{ investments|length }}</span>
+      <button id="next-card" class="nav-btn">Next →</button>
+    </div>
+    {% else %}
+    <div class="no-investments">
+      <p>You don't have any property investments yet.</p>
+      <p>Visit the Market Place to start investing!</p>
+    </div>
+    {% endif %}
   </div>
 
   <!-- Market Place Button -->
-  <div class="div2-2 kpi-card purple">
+  <a href="{% url 'marketplace:marketplace' %}" class="div2-2 kpi-card purple" style="text-decoration: none; cursor: pointer;">
     <span class="small-label">Get More Shares</span>
     <img
       src="{% static 'icons/kpi_card.svg' %}"
@@ -35,42 +49,36 @@
       alt="overlay"
     />
     <span class="large-label">Market Place →</span>
-  </div>
+  </a>
 
   <!-- Returns Table -->
   <div class="div2-3 returns">
     <h3>Returns</h3>
+    {% if has_investments %}
     <table>
       <thead>
         <tr>
-          <th>Share ID</th>
-          <th>Share Amount</th>
+          <th>Certificate</th>
+          <th>Share %</th>
           <th>M. Return</th>
-          <th>Area</th>
+          <th>Property</th>
         </tr>
       </thead>
       <tbody>
+        {% for item in investments %}
         <tr>
-          <td>#1328</td>
-          <td>6.5%</td>
-          <td>23$</td>
-          <td>P. Romana 🔗</td>
+          <td>#{{ item.certificate_id|default:"N/A" }}</td>
+          <td>{{ item.share_percentage }}%</td>
+          <td>${{ item.monthly_return }}</td>
+          <td>{{ item.investment.property.property_name }}</td>
         </tr>
-        <tr>
-          <td>#1347</td>
-          <td>7.9%</td>
-          <td>30$</td>
-          <td>Citylife 🔗</td>
-        </tr>
-        <tr>
-          <td>#1478</td>
-          <td>2.7%</td>
-          <td>15$</td>
-          <td>Brera 🔗</td>
-        </tr>
+        {% endfor %}
       </tbody>
     </table>
-    <p class="total-return">Total Monthly Return <strong>68$</strong></p>
+    <p class="total-return">Total Monthly Return <strong>${{ total_monthly_return }}</strong></p>
+    {% else %}
+    <p class="no-data">No investments to display</p>
+    {% endif %}
   </div>
 
   <!-- Transfer Now Button -->
@@ -87,5 +95,65 @@
   <!-- Optional bottom-left div -->
   <div class="div2-5"></div>
 </div>
+
+<!-- Card Shuffle Script -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const cardStack = document.getElementById('card-stack');
+  const prevBtn = document.getElementById('prev-card');
+  const nextBtn = document.getElementById('next-card');
+  const cardCounter = document.getElementById('card-counter');
+
+  if (!cardStack) return; // Exit if no investments
+
+  const cards = Array.from(cardStack.querySelectorAll('.share-card'));
+  let currentIndex = 0;
+  const totalCards = cards.length;
+
+  function updateCards() {
+    cards.forEach((card, index) => {
+      card.classList.remove('front', 'middle', 'back', 'hidden');
+
+      if (index === currentIndex) {
+        card.classList.add('front');
+        card.style.zIndex = 3;
+      } else if (index === (currentIndex + 1) % totalCards) {
+        card.classList.add('middle');
+        card.style.zIndex = 2;
+      } else if (index === (currentIndex + 2) % totalCards) {
+        card.classList.add('back');
+        card.style.zIndex = 1;
+      } else {
+        card.classList.add('hidden');
+        card.style.zIndex = 0;
+      }
+    });
+
+    cardCounter.textContent = `${currentIndex + 1} of ${totalCards}`;
+
+    // Update button states
+    prevBtn.disabled = totalCards <= 1;
+    nextBtn.disabled = totalCards <= 1;
+  }
+
+  function nextCard() {
+    if (totalCards <= 1) return;
+    currentIndex = (currentIndex + 1) % totalCards;
+    updateCards();
+  }
+
+  function prevCard() {
+    if (totalCards <= 1) return;
+    currentIndex = (currentIndex - 1 + totalCards) % totalCards;
+    updateCards();
+  }
+
+  if (prevBtn) prevBtn.addEventListener('click', prevCard);
+  if (nextBtn) nextBtn.addEventListener('click', nextCard);
+
+  // Initialize
+  updateCards();
+});
+</script>
 
 {% endblock %}

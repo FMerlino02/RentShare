@@ -1,0 +1,28 @@
+<table>
+  <thead>
+    <tr>
+      <th>Order ID</th>
+      <th>Customer</th>
+      <th>Shares</th>
+      <th>Price</th>
+      <th>Area</th>
+      <th>Status</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for t in transactions %}
+    <tr>
+      <td>{{ t.order_id }}</td>
+      <td>{{ t.customer.username }}</td>
+      <td>{{ t.shares_amount }}</td>
+      <td>${{ t.price }}</td>
+      <td>{{ t.property.area.name }}</td>
+      <td class="status {{ t.status|lower }}">{{ t.status }}</td>
+    </tr>
+    {% empty %}
+    <tr>
+      <td colspan="6" style="text-align: center;">No transactions found</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>

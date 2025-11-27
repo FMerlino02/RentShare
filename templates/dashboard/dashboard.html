@@ -46,7 +46,7 @@
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
 <script>
-  var map = L.map('map').setView([45.4642, 9.1900], 12);
+  var map = L.map('map');
 
   L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
       attribution: '&copy; CartoDB',
@@ -59,12 +59,24 @@
       popupAnchor: [0, -32]
   });
 
+  // Create bounds object to fit all markers
+  var bounds = L.latLngBounds();
+
   {% for area in areas %}
     {% for prop in area.properties.all %}
-      L.marker([{{ prop.latitude }}, {{ prop.longitude }}], { icon: customIcon }).addTo(map)
+      var marker = L.marker([{{ prop.latitude }}, {{ prop.longitude }}], { icon: customIcon }).addTo(map)
         .bindPopup(`<b>{{ prop.property_name|escapejs }}</b><br>{{ area.name|escapejs }}`);
+      bounds.extend([{{ prop.latitude }}, {{ prop.longitude }}]);
     {% endfor %}
   {% endfor %}
+
+  // Center map to show all markers
+  if (bounds.isValid()) {
+    map.fitBounds(bounds, { padding: [50, 50] });
+  } else {
+    // Fallback if no properties exist
+    map.setView([45.4642, 9.1900], 12);
+  }
 </script>
 
 <!-- Modal -->

@@ -16,7 +16,7 @@
   <div class="div2 kpi-card purple">
     <h4>Most Profitable Area</h4>
     <img src="{% static 'icons/kpi_card.svg' %}" class="kpi-svg-overlay" alt="overlay" />
-    <p class="kpi-value">$12,245</p>
+    <p class="kpi-value">Porta Romana</p>
     <p class="kpi-sub"><span class="up">▲</span> 16% Sales</p>
   </div>
 
@@ -44,30 +44,28 @@
   <!-- Orders Table (Bottom Left - div5) -->
   <div class="div5 table-card">
     <h3>Orders</h3>
-    <table>
-      <thead>
-        <tr>
-          <th>Order ID</th>
-          <th>Customer</th>
-          <th>Shares</th>
-          <th>Price</th>
-          <th>Area</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for t in transactions %}
-        <tr>
-          <td>#{{ t.id }}</td>
-          <td>{{ t.customer.username }}</td>
-          <td>{{ t.shares }}</td>
-          <td>${{ t.price }}</td>
-          <td>{{ t.property.area.name }}</td>
-          <td class="status {{ t.status|lower }}">{{ t.status }}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+    <div class="table-wrapper" id="transactions-table">
+      {% include 'ownership/partials/transactions_table.html' %}
+    </div>
+
+    <!-- Pagination Controls -->
+    {% if transactions.has_other_pages %}
+    <div class="pagination" id="pagination-controls">
+      {% if transactions.has_previous %}
+        <a href="#" data-page="1" class="page-link pagination-link">&laquo; First</a>
+        <a href="#" data-page="{{ transactions.previous_page_number }}" class="page-link pagination-link">Previous</a>
+      {% endif %}
+
+      <span class="page-info">
+        Page <span id="current-page">{{ transactions.number }}</span> of <span id="total-pages">{{ transactions.paginator.num_pages }}</span>
+      </span>
+
+      {% if transactions.has_next %}
+        <a href="#" data-page="{{ transactions.next_page_number }}" class="page-link pagination-link">Next</a>
+        <a href="#" data-page="{{ transactions.paginator.num_pages }}" class="page-link pagination-link">Last &raquo;</a>
+      {% endif %}
+    </div>
+    {% endif %}
   </div>
 
 </div>
@@ -112,20 +110,110 @@
 
 <!-- Area Chart -->
 <script>
+  // Area data from backend
+  const areaData = {{ area_stats|safe }};
+  const areaLabels = areaData.map(item => item.area__name || 'Unknown');
+  const areaValues = areaData.map(item => item.property_count);
+  const areaColors = ['#8A5CF6', '#C084FC', '#34D399', '#F87171', '#FBBF24', '#60A5FA'];
+
   const areaCtx = document.getElementById('areaChart').getContext('2d');
   new Chart(areaCtx, {
     type: 'pie',
     data: {
-      labels: ['Brera', 'P. Romana', 'CityLife', 'San Siro'],
+      labels: areaLabels,
       datasets: [{
-        data: [30, 25, 25, 20],
-        backgroundColor: ['#8A5CF6', '#C084FC', '#34D399', '#F87171']
+        data: areaValues,
+        backgroundColor: areaColors.slice(0, areaData.length)
       }]
     },
     options: {
       plugins: {
         legend: { display: false }
       }
+    }
+  });
+
+  // Update legend dynamically
+  const legendContainer = document.querySelector('.legend');
+  legendContainer.innerHTML = '';
+  areaData.forEach((item, index) => {
+    const li = document.createElement('li');
+    li.innerHTML = `<span class="dot" style="background: ${areaColors[index]}"></span> ${item.area__name || 'Unknown'}`;
+    legendContainer.appendChild(li);
+  });
+</script>
+
+<!-- AJAX Pagination Script -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Add click event to all pagination links
+    document.addEventListener('click', function(e) {
+      if (e.target.classList.contains('pagination-link') || e.target.closest('.pagination-link')) {
+        e.preventDefault();
+        const link = e.target.classList.contains('pagination-link') ? e.target : e.target.closest('.pagination-link');
+        const page = link.getAttribute('data-page');
+
+        if (page) {
+          loadPage(page);
+        }
+      }
+    });
+
+    function loadPage(pageNumber) {
+      // Show loading state
+      const tableWrapper = document.getElementById('transactions-table');
+      tableWrapper.style.opacity = '0.5';
+
+      // Make AJAX request
+      fetch(`?page=${pageNumber}`, {
+        method: 'GET',
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest'
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        // Update table content
+        tableWrapper.innerHTML = data.transactions_html;
+        tableWrapper.style.opacity = '1';
+
+        // Update pagination controls
+        updatePaginationControls(data);
+
+        // Scroll to table smoothly
+        document.querySelector('.div5').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      })
+      .catch(error => {
+        console.error('Error loading page:', error);
+        tableWrapper.style.opacity = '1';
+      });
+    }
+
+    function updatePaginationControls(data) {
+      const paginationDiv = document.getElementById('pagination-controls');
+      let paginationHTML = '';
+
+      if (data.has_previous) {
+        paginationHTML += `
+          <a href="#" data-page="1" class="page-link pagination-link">&laquo; First</a>
+          <a href="#" data-page="${data.previous_page_number}" class="page-link pagination-link">Previous</a>
+        `;
+      }
+
+      paginationHTML += `
+        <span class="page-info">
+          Page <span id="current-page">${data.current_page}</span> of <span id="total-pages">${data.total_pages}</span>
+        </span>
+      `;
+
+      if (data.has_next) {
+        paginationHTML += `
+          <a href="#" data-page="${data.next_page_number}" class="page-link pagination-link">Next</a>
+          <a href="#" data-page="${data.total_pages}" class="page-link pagination-link">Last &raquo;</a>
+        `;
+      }
+
+      paginationDiv.innerHTML = paginationHTML;
     }
   });
 </script>
